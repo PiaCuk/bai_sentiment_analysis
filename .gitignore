@@ -106,3 +106,6 @@ venv.bak/
 
 # VS Code
 .vscode
+
+# data folter
+data/

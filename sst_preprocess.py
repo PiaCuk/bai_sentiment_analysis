@@ -28,7 +28,7 @@ def wordlist_to_bert(wordlist):
         bert_list.append(np.squeeze(np.asarray(vectors)))
     return np.asarray(bert_list)
 
-def tree_to_bert(tree_labels):
+def tree_to_bert(tree_labels, verbose=False):
     bert = BertEmbedding()
     x_list = []
     y_list = []
@@ -36,6 +36,8 @@ def tree_to_bert(tree_labels):
         y, x = t.to_labeled_lines()[0]
         y_list.append(y)
         str_list, arr_list = zip(*bert([x]))
+        if verbose:
+            print(str_list)
         x_list.append(np.squeeze(np.asarray(arr_list)))
         # print(x_list[-1].shape)
     return x_list, y_list
@@ -45,40 +47,41 @@ def filter_minlength(sequences, labels, min_length=5):
     filtered_labels, filtered_sequences = zip(*y_x_filtered)
     return filtered_sequences, filtered_labels
 
-sst_data = pytreebank.load_sst()
-"""
-train_set = sst_data['train'][:1]
-print(len(train_set))
-x_train, y_train = tree_to_wordlist(train_set)
-x_train = wordlist_to_bert(x_train)
-np.save('test', x_train)
-"""
-# Load the dataset and vectorize it
-train_set = sst_data['train'][:500]
-x_train, y_train = tree_to_bert(train_set)
-print("All training samples, w/o filtering " + str(len(x_train)))
+def sst_preprocess(partition='train'):
+    sst_data = pytreebank.load_sst()
+    # Load the dataset and vectorize it
+    train_set = sst_data[partition]
+    x_list, y_list = tree_to_bert(train_set)
+    print("All training samples, w/o filtering " + str(len(x_list)))
 
-# Filter for min sentence length
-# Setting the min length to 5, this is the 3rd percentile
-# Also, it makes sense for the sentences to be at least 5 words
-x_train_filtered, y_train_filtered = filter_minlength(x_train, y_train, min_length=5)
-print("All training samples, w/ filtering " + str(len(x_train_filtered)))
+    # Filter for min sentence length
+    # Setting the min length to 5, this is the 3rd percentile
+    # Also, it makes sense for the sentences to be at least 5 words
+    x_filtered, y_filtered = filter_minlength(x_list, y_list, min_length=5)
+    print("All training samples, w/ filtering " + str(len(x_filtered)))
 
-# Pad sequences to same length
-# Max length for the training dataset is 23, so doing 25 to make sure
-x_train_padded = pad_sequences(x_train_filtered, maxlen=25, dtype='float32', padding='post')
-print(x_train_padded.shape)
+    # Pad sequences to same length
+    # Max length for the training dataset is 23, so padding to 25 to make sure
+    x_padded = pad_sequences(x_filtered, maxlen=25, dtype='float32', padding='post')
+    print(x_padded.shape)
 
-# One-hot encode labels
-y_train_onehot = to_categorical(y_train_filtered, num_classes=5)
+    # One-hot encode labels. This is necessary to use loss=categorical_crossentropy for training
+    y_onehot = to_categorical(y_filtered, num_classes=5)
 
-# Save it all to .npy files
-np.save('x_train_bert500', x_train_padded)
-np.save('y_train_bert500', y_train_onehot)
+    # Save it all to .npy files
+    np.save('data/x_'+partition+'_bert', x_padded)
+    np.save('data/y_'+partition+'_bert', y_onehot)
 
-'''Log for bert500
+
+sst_preprocess('dev')
+'''Log for bert (entire train dataset)
 Using TensorFlow backend.
-All training samples, w/o filtering 500
-All training samples, w/ filtering 486
-(486, 25, 768)
+All training samples, w/o filtering 8544
+All training samples, w/ filtering 8177
+(8177, 25, 768)
+
+Log for bert (dev)
+All training samples, w/o filtering 1101
+All training samples, w/ filtering 1068
+(1068, 25, 768)
 '''
