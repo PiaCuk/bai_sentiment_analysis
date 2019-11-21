@@ -52,13 +52,13 @@ def sst_preprocess(partition='train'):
     # Load the dataset and vectorize it
     train_set = sst_data[partition]
     x_list, y_list = tree_to_bert(train_set)
-    print("All training samples, w/o filtering " + str(len(x_list)))
+    print("All "+partition+" samples, w/o filtering " + str(len(x_list)))
 
     # Filter for min sentence length
     # Setting the min length to 5, this is the 3rd percentile
     # Also, it makes sense for the sentences to be at least 5 words
     x_filtered, y_filtered = filter_minlength(x_list, y_list, min_length=5)
-    print("All training samples, w/ filtering " + str(len(x_filtered)))
+    print("All "+partition+" samples, w/ filtering " + str(len(x_filtered)))
 
     # Pad sequences to same length
     # Max length for the training dataset is 23, so padding to 25 to make sure
@@ -73,7 +73,7 @@ def sst_preprocess(partition='train'):
     np.save('data/y_'+partition+'_bert', y_onehot)
 
 
-sst_preprocess('dev')
+sst_preprocess('test')
 '''Log for bert (entire train dataset)
 Using TensorFlow backend.
 All training samples, w/o filtering 8544
@@ -81,7 +81,12 @@ All training samples, w/ filtering 8177
 (8177, 25, 768)
 
 Log for bert (dev)
-All training samples, w/o filtering 1101
-All training samples, w/ filtering 1068
+All dev samples, w/o filtering 1101
+All dev samples, w/ filtering 1068
 (1068, 25, 768)
+
+Log for bert (test)
+All test samples, w/o filtering 2210
+All test samples, w/ filtering 2149
+(2149, 25, 768)
 '''
