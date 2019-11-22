@@ -4,18 +4,22 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 import matplotlib.pyplot as plt
 from models import conv_model
 
-_SEQ_SHAPE = (25, 768)
+# elmo: 
+_SEQ_SHAPE = (25, 1024)
+# bert:
+#_SEQ_SHAPE = (25, 768)
 
+# specify embedding in test() and train() with parameter "embedding", default = bert
 def main():
-    # train()
-    test('models/weights.03-1.26.hdf5')
+    #train(embedding='elmo')
+    test('models/weights.04-1.29.hdf5', embedding = 'elmo')
 
 ###############################################################################################################
-def train(plot=True):
-    x_train = np.load('data/x_train_bert.npy')
-    y_train = np.load('data/y_train_bert.npy')
-    x_val = np.load('data/x_dev_bert.npy')
-    y_val = np.load('data/y_dev_bert.npy')
+def train(plot=True, embedding = 'bert'):
+    x_train = np.load('data/x_train_' + embedding + '.npy')
+    y_train = np.load('data/y_train_' + embedding + '.npy')
+    x_val = np.load('data/x_dev_' + embedding + '.npy')
+    y_val = np.load('data/y_dev_' + embedding + '.npy')
 
     model = conv_model(_SEQ_SHAPE)
     print(y_train.shape)
@@ -38,9 +42,9 @@ def train(plot=True):
         plt.legend(['train', 'validation'], loc='upper left')
         plt.show()
 
-def test(ckpt):
-    x_test = np.load('data/x_test_bert.npy')
-    y_test = np.load('data/y_test_bert.npy')
+def test(ckpt, embedding = 'elmo'):
+    x_test = np.load('data/x_test_' + embedding + '.npy')
+    y_test = np.load('data/y_test_' + embedding + '.npy')
 
     model = conv_model(_SEQ_SHAPE, load_weights=ckpt)
 
