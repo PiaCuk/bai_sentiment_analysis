@@ -12,16 +12,27 @@ _SEQ_SHAPE = (25, 768)
 # specify embedding in test() and train() with parameter "embedding", default = bert
 def main():
     #train(embedding='bert')
-    test('models/weights.04-1.23.hdf5', embedding = 'bert')
+    test('models/weights.04-1.29.hdf5', embedding = 'bert')
     '''
-    Accuracy: 46.21% for keras_128 and bert embedding
-    Accuracy: 47.18% for keras_256 and bert embedding
-    Accuracy: 46.07% for keras_512 and bert embedding
-    Accuracy: 47.56% for keras_512-256-128 and bert embedding
-    Accuracy: 45.84% for conv_model and bert
-    Accuracy: 48.30% for lstm_128 and bert embedding
-    Accuracy: 47.51% for lstm_64 and bert embedding
-    Accuracy: 48.67% for lstm_128-64 and bert embedding
+    BERT: 
+    Accuracy: 46.21% for keras_128    
+    Accuracy: 47.18% for keras_256    
+    Accuracy: 46.07% for keras_512    
+    Accuracy: 47.56% for keras_512-256-128    
+    Accuracy: 45.84% for conv_model
+    Accuracy: 48.30% for lstm_128    
+    Accuracy: 47.51% for lstm_64    
+    Accuracy: 48.67% for lstm_128-64    
+
+    ELMO:
+    Accuracy: 44.21% for lstm_128-64
+    Accuracy: 44.63% for lstm_128
+    Accuracy: 44.81% for lstm_64
+    Accuracy: 44,95% for keras_128 
+    Accuracy: 46,07% for keras_256 
+    Accuracy: 45.46% for keras_512 
+    Accuracy: 44.63% for keras_512-256-128
+    Accuracy: 44.21% for conv_model
     '''
 
 ###############################################################################################################
