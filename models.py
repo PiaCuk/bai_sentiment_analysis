@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Conv1D, MaxPooling1D, LSTM, Dense, Flatten, Dropout
+from keras.layers import Embedding, Conv1D, MaxPooling1D, LSTM, Dense, Flatten, Dropout
 
 def conv_model(input_shape, drop_rate=0.5, load_weights=None, verbose=True):
     model = Sequential()
@@ -21,18 +21,23 @@ def conv_model(input_shape, drop_rate=0.5, load_weights=None, verbose=True):
         print(model.summary())
     return model
 
-def keras_conv_model(input_shape, load_weights=None, verbose=True):
+# decided on CNN 256 and LSTM 128-64 as our two test architectures
+def keras_conv_model(input_shape, units=256, load_weights=None, verbose=True):
     model = Sequential()
     
-    model.add(Conv1D(512, 3, activation='relu', padding='same', input_shape=input_shape))
+    if not isinstance(input_shape, tuple):
+        model.add(Embedding(1000, units, input_length=input_shape))
+        model.add(Conv1D(units, 3, activation='relu', padding='same'))
+    else:
+        model.add(Conv1D(units, 3, activation='relu', padding='same', input_shape=input_shape))
     model.add(MaxPooling1D(3, strides=2))
-    model.add(Conv1D(512, 3, activation='relu', padding='same'))
+    model.add(Conv1D(units, 3, activation='relu', padding='same'))
     model.add(MaxPooling1D(3, strides=2))
-    model.add(Conv1D(512, 3, activation='relu', padding='same'))
+    model.add(Conv1D(units, 3, activation='relu', padding='same'))
     model.add(MaxPooling1D(5))  # global max pooling
     model.add(Flatten())
     model.add(Dropout(0.5))
-    model.add(Dense(512, activation='relu'))
+    model.add(Dense(units, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(5, activation='softmax'))
     

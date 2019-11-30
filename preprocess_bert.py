@@ -3,7 +3,7 @@ import pytreebank
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from bert_embedding import BertEmbedding
-from preprocess_utils import tree_to_wordlist
+from preprocess_utils import tree_to_wordlist, filter_minlength
 
 
 def wordlist_to_bert(labeled_tree):
@@ -29,11 +29,6 @@ def tree_to_bert(tree_labels, verbose=False):
         x_list.append(np.squeeze(np.asarray(arr_list)))
         # print(x_list[-1].shape)
     return x_list, y_list
-
-def filter_minlength(sequences, labels, min_length=5):
-    y_x_filtered = [z for z in zip(labels, sequences) if z[1].shape[0] > min_length]
-    filtered_labels, filtered_sequences = zip(*y_x_filtered)
-    return filtered_sequences, filtered_labels
 
 def preprocess_bert(partition='train'):
     sst_data = pytreebank.load_sst()
