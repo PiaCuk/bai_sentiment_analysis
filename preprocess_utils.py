@@ -27,9 +27,11 @@ def tree_to_wordlist(tree_labels, use_tokenizer=False, bert_filtering=False):
         else:
             x = text_to_word_sequence(x)
         x_list.append(x)
+    
     print(len(x_list))
     y_x_filtered = [z for z in zip(y_list, x_list) if len(z[1]) > 2 and len(z[1]) < 40]
     y_list, x_list = zip(*y_x_filtered)
+    
     if use_tokenizer:
         tokenizer = Tokenizer(num_words=1000)
         tokenizer.fit_on_texts(x_list)

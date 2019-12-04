@@ -1,6 +1,8 @@
 from keras.models import Sequential
 from keras.layers import Embedding, Conv1D, MaxPooling1D, LSTM, Dense, Flatten, Dropout
 
+NUM_WORDS = 1000
+
 def conv_model(input_shape, drop_rate=0.5, load_weights=None, verbose=True):
     model = Sequential()
     # Convolutional model (3x conv, flatten, 2x dense)
@@ -21,12 +23,12 @@ def conv_model(input_shape, drop_rate=0.5, load_weights=None, verbose=True):
         print(model.summary())
     return model
 
-# decided on CNN 256 and LSTM 128-64 as our two test architectures
-def keras_conv_model(input_shape, units=256, load_weights=None, verbose=True):
+# decided on CNN 128 and LSTM 128-64 as our two test architectures
+def keras_conv_model(input_shape, units=128, load_weights=None, verbose=True):
     model = Sequential()
     
     if not isinstance(input_shape, tuple):
-        model.add(Embedding(1000, units, input_length=input_shape))
+        model.add(Embedding(NUM_WORDS, units, input_length=input_shape))
         model.add(Conv1D(units, 3, activation='relu', padding='same'))
     else:
         model.add(Conv1D(units, 3, activation='relu', padding='same', input_shape=input_shape))
@@ -49,13 +51,18 @@ def keras_conv_model(input_shape, units=256, load_weights=None, verbose=True):
         print(model.summary())
     return model
 
-def lstm_model(input_shape, drop_rate=0.5, load_weights=None, verbose=True):
+def lstm_model(input_shape, units=128, drop_rate=0.5, load_weights=None, verbose=True):
     model = Sequential()
-    model.add(LSTM(input_shape=input_shape, units=128, return_sequences=True))
+
+    if not isinstance(input_shape, tuple):
+        model.add(Embedding(NUM_WORDS, units, input_length=input_shape))
+        model.add(LSTM(units=units, return_sequences=True))
+    else:
+        model.add(LSTM(input_shape=input_shape, units=units, return_sequences=True))
     model.add(Dropout(drop_rate))
-    model.add(LSTM(units=64))
+    model.add(LSTM(units=int(units/2)))
     model.add(Dropout(drop_rate))
-    model.add(Dense(64, activation='relu'))
+    model.add(Dense(int(units/2), activation='relu'))
     model.add(Dropout(drop_rate))
     model.add(Dense(5, activation='softmax'))
     
