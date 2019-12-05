@@ -7,11 +7,15 @@ import matplotlib.pyplot as plt
 from models import conv_model, keras_conv_model, lstm_model
 
 # elmo: 
-#_SEQ_SHAPE = (25, 1024)
+#_SEQ_SHAPE = (40, 1024)
 # bert:
 _SEQ_SHAPE = (40, 768) # Used to be 25 w/ BertEmbedding(max_seq_legth=25) default
 # Keras embedding:
 #_SEQ_SHAPE = 40
+# glove embedding 300:
+#_SEQ_SHAPE = (40, 300)
+# glove embedding small:
+ä_SEQ_SHAPE = (40, 50)
 EMBEDDING = 'new_bert'
 
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
@@ -23,7 +27,7 @@ def main():
     '''
     log_file = open('models/'+EMBEDDING+'logfile.txt', 'a')
     score_list = []
-    for trial in range(2):
+    for trial in range(10):
         train(embedding=EMBEDDING, trial=EMBEDDING+str(trial))
         scores = test(embedding=EMBEDDING)
         accuracy = scores[1]*100
@@ -51,7 +55,7 @@ def train(embedding='bert', trial='trial', verbose=False, plot=False):
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.01, patience=3, verbose=0)
     #tensorboard = TensorBoard(log_dir='logs', write_graph=True)
 
-    out = model.fit(x_train, y_train, epochs=5, callbacks=[save_best_model, early_stopping], #, tensorboard],
+    out = model.fit(x_train, y_train, epochs=20, callbacks=[save_best_model, early_stopping], #, tensorboard],
                     batch_size=64, validation_data=(x_val, y_val), verbose=2 if verbose==True else 0)
     if plot:
         # Summarize history for loss
