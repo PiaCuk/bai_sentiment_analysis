@@ -68,7 +68,7 @@ def embed_bert(partition='train'):
     np.save('data/x_'+partition+'_new_bert', x_padded)
 
 if __name__ == '__main__':
-    embed_bert('dev')
+    embed_bert('train')
     '''
     preprocess_bert('test')
 
