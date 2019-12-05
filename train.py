@@ -15,7 +15,7 @@ _SEQ_SHAPE = (40, 768) # Used to be 25 w/ BertEmbedding(max_seq_legth=25) defaul
 # glove embedding 300:
 #_SEQ_SHAPE = (40, 300)
 # glove embedding small:
-ä_SEQ_SHAPE = (40, 50)
+#_SEQ_SHAPE = (40, 50)
 EMBEDDING = 'new_bert'
 
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
