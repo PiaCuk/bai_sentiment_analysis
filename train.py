@@ -21,10 +21,10 @@ def main():
     scores = test(embedding='keras', ckpt='models/trial0_weights.02-1.57.hdf5')
     print("Accuracy: %.2f%%" % (scores[1]*100))
     '''
-    log_file = open('models/'+EMBEDDING+'logfile.txt', 'a')
+    log_file = open('models/'+EMBEDDING+'_logfile.txt', 'a')
     score_list = []
     for trial in range(2):
-        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial))
+        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=False)
         scores = test(embedding=EMBEDDING)
         accuracy = scores[1]*100
         print("Accuracy: %.2f%%" % (accuracy))
@@ -51,7 +51,7 @@ def train(embedding='bert', trial='trial', verbose=False, plot=False):
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.01, patience=3, verbose=0)
     #tensorboard = TensorBoard(log_dir='logs', write_graph=True)
 
-    out = model.fit(x_train, y_train, epochs=5, callbacks=[save_best_model, early_stopping], #, tensorboard],
+    out = model.fit(x_train, y_train, epochs=20, callbacks=[save_best_model, early_stopping], #, tensorboard],
                     batch_size=64, validation_data=(x_val, y_val), verbose=2 if verbose==True else 0)
     if plot:
         # Summarize history for loss
