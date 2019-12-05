@@ -19,8 +19,8 @@ EMBEDDING = 'new_bert'
 def main():
     log_file = open('models/'+EMBEDDING+'_logfile.txt', 'a')
     score_list = []
-    for trial in range(2):
-        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=True)
+    for trial in range(10):
+        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=False)
         scores = test(embedding=EMBEDDING)
         accuracy = scores[1]*100
         print("Accuracy: %.2f%%" % (accuracy))
