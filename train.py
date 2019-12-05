@@ -17,14 +17,10 @@ EMBEDDING = 'new_bert'
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
 # specify embedding in test() and train() with parameter "embedding", default = bert
 def main():
-    '''
-    scores = test(embedding='keras', ckpt='models/trial0_weights.02-1.57.hdf5')
-    print("Accuracy: %.2f%%" % (scores[1]*100))
-    '''
     log_file = open('models/'+EMBEDDING+'_logfile.txt', 'a')
     score_list = []
     for trial in range(2):
-        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=False)
+        train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=True)
         scores = test(embedding=EMBEDDING)
         accuracy = scores[1]*100
         print("Accuracy: %.2f%%" % (accuracy))
