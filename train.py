@@ -4,6 +4,7 @@ import os
 from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report, confusion_matrix
 from models import conv_model, keras_conv_model, lstm_model
 
 # elmo: 
@@ -17,9 +18,10 @@ EMBEDDING = 'new_bert'
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
 # specify embedding in test() and train() with parameter "embedding", default = bert
 def main():
+    '''
     log_file = open('models/'+EMBEDDING+'_logfile.txt', 'a')
     score_list = []
-    for trial in range(10):
+    for trial in range(3):
         train(embedding=EMBEDDING, trial=EMBEDDING+str(trial), verbose=False)
         scores = test(embedding=EMBEDDING)
         accuracy = scores[1]*100
@@ -29,6 +31,8 @@ def main():
     
     print("Averaged accuracy: %.2f%%" % (np.mean(score_list)))
     log_file.close()
+    '''
+    class_report(embedding=EMBEDDING, ckpt='models/new_bert1_weights.10-1.34.hdf5')
 
 ###############################################################################################################
 def train(embedding='bert', trial='trial', verbose=False, plot=False):
@@ -40,7 +44,7 @@ def train(embedding='bert', trial='trial', verbose=False, plot=False):
         print(y_train.shape)
         print(x_train.shape)
 
-    model = keras_conv_model(_SEQ_SHAPE, verbose=verbose)
+    model = lstm_model(_SEQ_SHAPE, verbose=verbose)
     
     save_best_model = ModelCheckpoint('models/'+trial+'_weights.{epoch:02d}-{val_loss:.2f}.hdf5',
                                     monitor='val_loss', verbose=0, save_best_only=True, period=1)
@@ -70,10 +74,32 @@ def test(embedding='bert', ckpt=None, verbose=False):
     x_test = np.load('data/x_test_' + embedding + '.npy')
     y_test = np.load('data/y_test_' + embedding + '.npy')
 
-    model = keras_conv_model(_SEQ_SHAPE, load_weights=latest_ckpt, verbose=verbose)
+    model = lstm_model(_SEQ_SHAPE, load_weights=latest_ckpt, verbose=verbose)
 
     scores = model.evaluate(x_test, y_test, verbose=0)
     return scores
+
+def class_report(embedding='bert', ckpt=None, verbose=False):
+    if ckpt is not None:
+        latest_ckpt = ckpt
+    else:
+        list_of_files = glob.glob('models/*.hdf5')
+        latest_ckpt = max(list_of_files, key=os.path.getatime)
+        
+    x_test = np.load('data/x_test_' + embedding + '.npy')
+    y_test = np.load('data/y_test_' + embedding + '.npy')
+
+    model = lstm_model(_SEQ_SHAPE, load_weights=latest_ckpt, verbose=verbose)
+        
+    # Confution Matrix and Classification Report
+    Y_pred = model.predict(x_test, batch_size=64)
+    y_pred = np.argmax(Y_pred, axis=1)
+    y_true = np.argmax(y_test, axis=1)
+    #print(y_true)
+    print('Confusion Matrix')
+    print(confusion_matrix(y_true, y_pred, labels=[*range(5)], normalize='true'))
+    print('Classification Report')
+    print(classification_report(y_true, y_pred, labels=[*range(5)]))    
 
 ###############################################################################################################
 if __name__ == '__main__':
