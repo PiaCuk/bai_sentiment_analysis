@@ -8,11 +8,15 @@ from sklearn.metrics import classification_report, confusion_matrix
 from models import conv_model, keras_conv_model, lstm_model
 
 # elmo: 
-#_SEQ_SHAPE = (25, 1024)
+#_SEQ_SHAPE = (40, 1024)
 # bert:
 _SEQ_SHAPE = (40, 768) # Used to be 25 w/ BertEmbedding(max_seq_legth=25) default
 # Keras embedding:
 #_SEQ_SHAPE = 40
+# glove embedding 300:
+#_SEQ_SHAPE = (40, 300)
+# glove embedding small:
+#_SEQ_SHAPE = (40, 50)
 EMBEDDING = 'new_bert'
 
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
