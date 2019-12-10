@@ -22,7 +22,6 @@ EMBEDDING = 'new_bert'
 # decided on CNN 256 and LSTM 128-64 as our two test architectures
 # specify embedding in test() and train() with parameter "embedding", default = bert
 def main():
-    '''
     log_file = open('models/'+EMBEDDING+'_logfile.txt', 'a')
     score_list = []
     for trial in range(3):
@@ -35,11 +34,11 @@ def main():
     
     print("Averaged accuracy: %.2f%%" % (np.mean(score_list)))
     log_file.close()
-    '''
-    class_report(embedding=EMBEDDING, ckpt='models/new_bert1_weights.10-1.34.hdf5')
+
+    #class_report(embedding=EMBEDDING, ckpt='models/new_bert1_weights.10-1.34.hdf5')
 
 ###############################################################################################################
-def train(embedding='bert', trial='trial', verbose=False, plot=False):
+def train(embedding='bert', trial='trial', ckpt=None, verbose=False, plot=False):
     x_train = np.load('data/x_train_' + embedding + '.npy', allow_pickle=True)
     y_train = np.load('data/y_train_' + embedding + '.npy', allow_pickle=True)
     x_val = np.load('data/x_dev_' + embedding + '.npy', allow_pickle=True)
@@ -48,7 +47,7 @@ def train(embedding='bert', trial='trial', verbose=False, plot=False):
         print(y_train.shape)
         print(x_train.shape)
 
-    model = lstm_model(_SEQ_SHAPE, verbose=verbose)
+    model = lstm_model(_SEQ_SHAPE, load_weights=ckpt, verbose=verbose)
     
     save_best_model = ModelCheckpoint('models/'+trial+'_weights.{epoch:02d}-{val_loss:.2f}.hdf5',
                                     monitor='val_loss', verbose=0, save_best_only=True, period=1)
@@ -101,9 +100,11 @@ def class_report(embedding='bert', ckpt=None, verbose=False):
     y_true = np.argmax(y_test, axis=1)
     #print(y_true)
     print('Confusion Matrix')
-    print(confusion_matrix(y_true, y_pred, labels=[*range(5)], normalize='true'))
+    confusion = confusion_matrix(y_true, y_pred, labels=[*range(5)], normalize='true')
+    print(confusion)
     print('Classification Report')
-    print(classification_report(y_true, y_pred, labels=[*range(5)]))    
+    print(classification_report(y_true, y_pred, labels=[*range(5)]))
+    return confusion
 
 ###############################################################################################################
 if __name__ == '__main__':
